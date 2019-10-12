@@ -6,6 +6,7 @@ import utils.SessionUtils;
 
 import java.io.File;
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -13,18 +14,19 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
 
-@WebServlet(name = "UploadFileServlet", urlPatterns = {"/uploadfile"})
+@WebServlet(name = "UploadFileServlet", urlPatterns = {"/pages/usersPrivateAccount/uploadfile"})
+@MultipartConfig
 public class UploadFileServlet extends HttpServlet {
 
-    private static final String SAVE_DIR = "uploadFiles";
+    //private static final String SAVE_DIR = "uploadFiles";
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String xmlFile = null;
         String path = null;
         boolean valid = false;
-        String fileName1 =null;
-        File XmlObj = null;
+        String fileName1;
+        File XmlObj;
         try {
             String ss =request.getParameter("fAddr");
             for (Part part : request.getParts()) {
@@ -41,33 +43,30 @@ public class UploadFileServlet extends HttpServlet {
             }
             MAGitManager magitDataHolder = ServletUtils.getMagitManager(getServletContext());
             if (xmlFile != null) {
-                fileName1 = request.getParameter("fileName");
-                if(fileName1.isEmpty())
-                {
-                    throw new Exception("you have to put file name,please choose a name");
-                }
-                else if (magitDataHolder.isGameExists(fileName1)) {
+//                fileName1 = request.getParameter("fileName");
+//                if(fileName1.isEmpty())
+//                {
+//                    throw new Exception("you have to put file name,please choose a name");
+//                }
+                if (magitDataHolder.isRepositoryExists(xmlFile)) {
                     throw new Exception("The name already exists ,please choose different name");
                 }
                 String userName = SessionUtils.getUsername(request);
-                magitDataHolder.addRepository(fileName1, path, userName);
+                magitDataHolder.addRepository(xmlFile, path, userName);
             }
             else
             {
-                throw new Exception("you have to choose game");
+                throw new Exception("you have to choose  xml file !");
             }
-            if (valid) {
-                response.sendRedirect("usersPrivateAccount.jsp");
-            }
-//            else
-//            {
-//                response.sendRedirect("usersPrivateAccount.jsp");
-//            }
+
+            request.setAttribute("Massage" , "The file loaded successfully");
+            getServletContext().getRequestDispatcher("/pages/usersPrivateAccount/usersPrivateAccount.jsp").forward(request, response);
+
 
         } catch (Exception ex) {
 
-            request.setAttribute("errorMassage" , ex.getMessage());
-            getServletContext().getRequestDispatcher("/MainRoom/MainRoom.jsp").forward(request, response);
+            request.setAttribute("Massage" , ex.getMessage());
+            getServletContext().getRequestDispatcher("/pages/usersPrivateAccount/usersPrivateAccount.jsp").forward(request, response);
         }
     }
 
