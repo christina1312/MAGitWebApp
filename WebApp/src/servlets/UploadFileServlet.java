@@ -1,6 +1,6 @@
 package servlets;
 
-import System.MAGitManager;
+import System.RepositoryManager;
 import utils.ServletUtils;
 import utils.SessionUtils;
 
@@ -41,18 +41,12 @@ public class UploadFileServlet extends HttpServlet {
                     break;
                 }
             }
-            MAGitManager magitDataHolder = ServletUtils.getMagitManager(getServletContext());
+            RepositoryManager magitDataHolder = ServletUtils.getRepositoryManager(getServletContext());
             if (xmlFile != null) {
-//                fileName1 = request.getParameter("fileName");
-//                if(fileName1.isEmpty())
-//                {
-//                    throw new Exception("you have to put file name,please choose a name");
-//                }
                 if (magitDataHolder.isRepositoryExists(xmlFile)) {
                     throw new Exception("The name already exists ,please choose different name");
                 }
-                String userName = SessionUtils.getUsername(request);
-                magitDataHolder.addRepository(xmlFile, path, userName);
+                magitDataHolder.addRepository(xmlFile, path);
             }
             else
             {
