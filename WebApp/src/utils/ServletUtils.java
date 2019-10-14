@@ -1,7 +1,7 @@
 package utils;
 
 import System.UserManager;
-import System.RepositoryManager;
+import System.GitManager;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,11 +18,11 @@ public class ServletUtils {
         return (UserManager) servletContext.getAttribute(USER_MANAGER_ATTRIBUTE_NAME);
     }
 
-    public static RepositoryManager getRepositoryManager(ServletContext servletContext) {
+    public static GitManager getRepositoryManager(ServletContext servletContext) {
         if (servletContext.getAttribute(BASIC_MAGIT_MANAGER_ATTRIBUTE_NAME) == null) {
-            servletContext.setAttribute(BASIC_MAGIT_MANAGER_ATTRIBUTE_NAME, new RepositoryManager());
+            servletContext.setAttribute(BASIC_MAGIT_MANAGER_ATTRIBUTE_NAME, new GitManager());
         }
-        return (RepositoryManager) servletContext.getAttribute(BASIC_MAGIT_MANAGER_ATTRIBUTE_NAME);
+        return (GitManager) servletContext.getAttribute(BASIC_MAGIT_MANAGER_ATTRIBUTE_NAME);
     }
 
     public static int getIntParameter(HttpServletRequest request, String name) {

@@ -1,8 +1,9 @@
 package servlets;
 
 import com.google.gson.Gson;
-import System.RepositoryManager;
+import System.GitManager;
 import System.UserManager;
+import System.BasicMAGitManager;
 import utils.ServletUtils;
 import utils.SessionUtils;
 
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @WebServlet(name = "RepositoriesListServlet", urlPatterns = {"/pages/usersPrivateAccount/repositorieslist"})
@@ -24,10 +27,22 @@ public class RepositoriesListServlet extends HttpServlet {
         String g = request.getParameter("method");
         if (g!=null && g.equals("getRepositoriesList")) {
             try (PrintWriter out = response.getWriter()) {
+                String username = request.getParameter("userName");
                 Gson gson = new Gson();
-                RepositoryManager repositoryManager = ServletUtils.getRepositoryManager(getServletContext());
-                Map<String, String> repositoriesList = repositoryManager.getRepository();
-                String json = gson.toJson(repositoriesList);
+                GitManager gitManager = ServletUtils.getRepositoryManager(getServletContext());
+                List<BasicMAGitManager> repositoriesList = gitManager.getRepositoriesByUserName(username);
+                StringBuilder res = new StringBuilder();
+
+                for(BasicMAGitManager manager: repositoriesList) {
+                    res.append("Repository name: "+ manager.getRepositoryName() +"\n" );
+                    res.append("Active branch name: "+ manager.getRepositoryActiveBranch() +"\n" );
+                    res.append("Branch #: "+ manager.getRepositoryBranchCount() +"\n" );
+                    res.append("Last commit time: "+ manager.getRepositoryLastCommitTime() +"\n" );
+                    res.append("Last commit message: "+ manager.getRepositoryLastCommitMessage() +"\n" );
+                    res.append("--------------------------------- " + "\n");
+                }
+
+                String json = gson.toJson(res);
                 out.println(json);
                 out.flush();
             }

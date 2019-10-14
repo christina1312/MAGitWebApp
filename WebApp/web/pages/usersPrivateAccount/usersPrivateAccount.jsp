@@ -21,7 +21,14 @@
             <br/><br/><br/>
         </td>
         </td>
-        <td width="50%" rowspan="2">Repositories list</td>
+        <td width="50%" rowspan="2">
+            <div>
+                Repositories list
+                <ul id="repositorieslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
+                </ul>
+            </div>
+
+        </td>
         <td><div style="height:100px;overflow:auto;">
             Users list:
             <br/>
@@ -33,15 +40,14 @@
     <tr>
         <td><div  width="20%" style="height:100px;overflow:auto;">
             Notifications:
-        <br/>
+            <br/>
         </div>
         </td>
         <td><div style="height:100px;overflow:auto;">
             Users Repositories List:
-
-             <br/>
             <ul id="repositoriesUserlist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
             </ul>
+            <br/>
         </div>
         </td>
     </tr>

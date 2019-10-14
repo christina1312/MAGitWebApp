@@ -1,6 +1,6 @@
 package servlets;
 
-import System.RepositoryManager;
+import System.GitManager;
 import utils.ServletUtils;
 import utils.SessionUtils;
 
@@ -18,14 +18,10 @@ import java.io.IOException;
 @MultipartConfig
 public class UploadFileServlet extends HttpServlet {
 
-    //private static final String SAVE_DIR = "uploadFiles";
-
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String xmlFile = null;
         String path = null;
-        boolean valid = false;
-        String fileName1;
         File XmlObj;
         try {
             String ss =request.getParameter("fAddr");
@@ -41,12 +37,13 @@ public class UploadFileServlet extends HttpServlet {
                     break;
                 }
             }
-            RepositoryManager magitDataHolder = ServletUtils.getRepositoryManager(getServletContext());
+            GitManager magitDataHolder = ServletUtils.getRepositoryManager(getServletContext());
             if (xmlFile != null) {
                 if (magitDataHolder.isRepositoryExists(xmlFile)) {
                     throw new Exception("The name already exists ,please choose different name");
                 }
-                magitDataHolder.addRepository(xmlFile, path);
+                String userName = SessionUtils.getUsername(request);
+                magitDataHolder.addRepository(xmlFile, path, userName);
             }
             else
             {

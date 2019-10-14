@@ -3,6 +3,7 @@ var chatVersion = 0;
 var refreshRate = 2000; //mili seconds
 //var USER_LIST_URL = buildUrlWithContextPath("userslist");
 //var REPOSITORY_LIST_URL= buildUrlWithContextPath("repositorieslist");
+var  CHAT_LIST_URL= "";
 
 function refreshUsersList(users) {
     //clear all current users
@@ -13,8 +14,42 @@ function refreshUsersList(users) {
         console.log("Adding user #" + index + ": " + username);
         //create a new <option> tag with a value in it and
         //appeand it to the #userslist (div with id=userslist) element
-        $('<li>' + username + '</li>').appendTo($("#userslist"));
+        $('<li onclick="showUserRepositories(event)" id="'+ username +'">' + username + '</li>').appendTo($("#userslist"));
     });
+}
+
+function showUserRepositories(ev) {
+    var userName = ev.target.id;
+    $("#repositoriesUserlist").empty();
+    $.ajax({
+        url: "repositorieslist?method=getRepositoriesList&userName=" + userName,
+        success: function (r) {
+            console.log(r);
+            $('<li>' + r + '</li>').appendTo($("#repositoriesUserlist"));
+        }
+    })
+}
+
+function writeRepositoryToboard(index, repository) {
+    var tr = $(document.createElement("tr"));
+    var RepositoryName = $(document.createElement("td"));
+    var ActiveBranchName = $(document.createElement("td"));
+    var NumberOfBranches = $(document.createElement("td"));
+    var LastCommitTime = $(document.createElement("td"));
+    var LastCommitMessage = $(document.createElement("td"));
+
+    $(RepositoryName).html(repository.name);
+    $(ActiveBranchName).html(repository.ActiveBranchName);
+    $(NumberOfBranches).html(repository.NumberOfBranches);
+    $(LastCommitTime).html(repository.LastCommitTime);
+    $(LastCommitMessage).html(repository.LastCommitTime);
+
+    tr.append(RepositoryName);
+    tr.append(ActiveBranchName);
+    tr.append(NumberOfBranches);
+    tr.append(LastCommitTime);
+    tr.append(LastCommitMessage);
+
 }
 function refreshRepositoriesList(Repositories) {
     //clear all current users
@@ -66,16 +101,16 @@ function ajaxUsersList() {
 
 function ajaxRepositoriesList() {
 
-    $.ajax({
-        url: "repositorieslist?method=getRepositoriesList", //REPOSITORY_LIST_URL,
-        success: function (Repositories) {
-            console.log("before callback repository list");
-            refreshRepositoriesList(Repositories);
-        },
-        error: function(error) {
-            console.log(error);
-        }
-    });
+    // $.ajax({
+    //     url: "repositorieslist?method=getRepositoriesList", //REPOSITORY_LIST_URL,
+    //     success: function (Repositories) {
+    //         console.log("before callback repository list");
+    //         refreshRepositoriesList(Repositories);
+    //     },
+    //     error: function(error) {
+    //         console.log(error);
+    //     }
+    // });
 }
 
 //call the server and get the chat version
@@ -113,7 +148,7 @@ $(function() {
     setInterval(ajaxUsersList, refreshRate);
 
     //The repositories list is refreshed automatically every second
-    setInterval(ajaxRepositoriesList, refreshRate);
+    //setInterval(ajaxRepositoriesList, refreshRate);
 
     //The chat content is refreshed only once (using a timeout) but
     //on each call it triggers another execution of itself later (1 second later)
