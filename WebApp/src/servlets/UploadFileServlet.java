@@ -37,7 +37,7 @@ public class UploadFileServlet extends HttpServlet {
                     break;
                 }
             }
-            GitManager magitDataHolder = ServletUtils.getRepositoryManager(getServletContext());
+            GitManager magitDataHolder = ServletUtils.getGitManager(getServletContext());
             if (xmlFile != null) {
                 if (magitDataHolder.isRepositoryExists(xmlFile)) {
                     throw new Exception("The name already exists ,please choose different name");

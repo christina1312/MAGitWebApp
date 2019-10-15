@@ -14,9 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @WebServlet(name = "RepositoriesListServlet", urlPatterns = {"/pages/usersPrivateAccount/repositorieslist"})
 public class RepositoriesListServlet extends HttpServlet {
@@ -29,20 +27,24 @@ public class RepositoriesListServlet extends HttpServlet {
             try (PrintWriter out = response.getWriter()) {
                 String username = request.getParameter("userName");
                 Gson gson = new Gson();
-                GitManager gitManager = ServletUtils.getRepositoryManager(getServletContext());
+                GitManager gitManager = ServletUtils.getGitManager(getServletContext());
                 List<BasicMAGitManager> repositoriesList = gitManager.getRepositoriesByUserName(username);
-                StringBuilder res = new StringBuilder();
+                Set<String> resList=new HashSet<String>();
 
                 for(BasicMAGitManager manager: repositoriesList) {
-                    res.append("Repository name: "+ manager.getRepositoryName() +"\n" );
-                    res.append("Active branch name: "+ manager.getRepositoryActiveBranch() +"\n" );
-                    res.append("Branch #: "+ manager.getRepositoryBranchCount() +"\n" );
-                    res.append("Last commit time: "+ manager.getRepositoryLastCommitTime() +"\n" );
-                    res.append("Last commit message: "+ manager.getRepositoryLastCommitMessage() +"\n" );
-                    res.append("--------------------------------- " + "\n");
+                    StringBuilder res = new StringBuilder();
+                    res.append("Repository name: "+ manager.getRepositoryName() +"<br/>" );
+                    res.append("Active branch name: "+ manager.getRepositoryActiveBranch() +"<br/>");
+                    res.append("Branch amount: "+ manager.getRepositoryBranchCount() +"<br/>" );
+                    res.append("Last commit time: "+ manager.getRepositoryLastCommitTime() +"<br/>" );
+                    res.append("Last commit message: "+ manager.getRepositoryLastCommitMessage() +"<br/>" );
+                    res.append("--------------------------------- " + "<br/>" );
+
+                    resList.add(res.toString());
                 }
 
-                String json = gson.toJson(res);
+               // String json = gson.toJson(res);
+                String json = gson.toJson(resList);
                 out.println(json);
                 out.flush();
             }
@@ -54,7 +56,6 @@ public class RepositoriesListServlet extends HttpServlet {
                     break;
                 }
             }
-
         }
     }
 

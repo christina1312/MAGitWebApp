@@ -30,38 +30,18 @@ function showUserRepositories(ev) {
     })
 }
 
-function writeRepositoryToboard(index, repository) {
-    var tr = $(document.createElement("tr"));
-    var RepositoryName = $(document.createElement("td"));
-    var ActiveBranchName = $(document.createElement("td"));
-    var NumberOfBranches = $(document.createElement("td"));
-    var LastCommitTime = $(document.createElement("td"));
-    var LastCommitMessage = $(document.createElement("td"));
-
-    $(RepositoryName).html(repository.name);
-    $(ActiveBranchName).html(repository.ActiveBranchName);
-    $(NumberOfBranches).html(repository.NumberOfBranches);
-    $(LastCommitTime).html(repository.LastCommitTime);
-    $(LastCommitMessage).html(repository.LastCommitTime);
-
-    tr.append(RepositoryName);
-    tr.append(ActiveBranchName);
-    tr.append(NumberOfBranches);
-    tr.append(LastCommitTime);
-    tr.append(LastCommitMessage);
-
-}
 function refreshRepositoriesList(Repositories) {
     //clear all current users
     $("#repositorieslist").empty();
 
     // rebuild the list of users: scan all users and add them to the list of users
-    $.each(Repositories || [], function(key, upFile) {
-        console.log("Adding repository #" + key + ": " + upFile);
+    $.each(Repositories || [], function(index, repositoryname) {
+        console.log("Adding repository #" + index + ": " + repositoryname);
 
         //create a new <option> tag with a value in it and
         //appeand it to the #userslist (div with id=userslist) element
-        $('<option>' + key + '</option>').appendTo($("#repositorieslist"));
+        $('<li>' + repositoryname + '</li>').appendTo($("#repositorieslist"));
+
     });
 
 }
@@ -101,16 +81,24 @@ function ajaxUsersList() {
 
 function ajaxRepositoriesList() {
 
-    // $.ajax({
-    //     url: "repositorieslist?method=getRepositoriesList", //REPOSITORY_LIST_URL,
-    //     success: function (Repositories) {
-    //         console.log("before callback repository list");
-    //         refreshRepositoriesList(Repositories);
-    //     },
-    //     error: function(error) {
-    //         console.log(error);
-    //     }
-    // });
+    $.ajax({
+        url: "userslist?method=getCurrentUserName", //REPOSITORY_LIST_URL,
+        success: function (userName) {
+            $.ajax({
+                url: "repositorieslist?method=getRepositoriesList&userName=" + userName, //REPOSITORY_LIST_URL,
+                success: function (Repositories) {
+                    console.log("before callback repository list");
+                    refreshRepositoriesList(Repositories);
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
 }
 
 //call the server and get the chat version
@@ -148,48 +136,9 @@ $(function() {
     setInterval(ajaxUsersList, refreshRate);
 
     //The repositories list is refreshed automatically every second
-    //setInterval(ajaxRepositoriesList, refreshRate);
+    setInterval(ajaxRepositoriesList, refreshRate);
 
     //The chat content is refreshed only once (using a timeout) but
     //on each call it triggers another execution of itself later (1 second later)
     triggerAjaxChatContent();
 });
-
-
-
-function changeName(sel) {
-    repositoryNameSaver = (sel.options[sel.selectedIndex].text);
-    document.getElementById("RepositoryName").textContent = "Repository name:" + repositoryNameSaver;
-    //getPlayerNameUplaod();
-    //getGameSize();
-    //getGameType();
-    //getPlayerInsideRepository();
-
-}
-
-function logout() {
-    $.ajax({
-        url: "repositorieslist",
-        data:{
-            button:"logout",
-        },
-        success: function (test) {
-            console.log(test);
-            window.location.replace("../index.jsp");
-        }
-    });
-}
-
-function DeleteRepository() {
-    $.ajax({
-        url: "repositorylist",
-        data:{
-            repositoryname:repositoryNameSaver,
-            button:"DeleteRepository",
-        },
-        success: function (test) {
-            confirm(test);
-        }
-    });
-}
-

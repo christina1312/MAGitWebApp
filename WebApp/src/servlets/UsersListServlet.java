@@ -3,6 +3,8 @@ package servlets;
 import com.google.gson.Gson;
 import utils.ServletUtils;
 import System.UserManager;
+import utils.SessionUtils;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Set;
@@ -11,6 +13,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import static java.lang.System.out;
 
 @WebServlet(name = "UsersListServlet", urlPatterns = {"/pages/usersPrivateAccount/userslist"})
 public class UsersListServlet extends HttpServlet {
@@ -26,6 +30,16 @@ public class UsersListServlet extends HttpServlet {
                 UserManager userManager = ServletUtils.getUserManager(getServletContext());
                 Set<String> usersList = userManager.getUsers();
                 String json = gson.toJson(usersList);
+                out.println(json);
+                out.flush();
+            }
+        }
+
+        else if(g.equals("getCurrentUserName")) {
+            try (PrintWriter out = response.getWriter()) {
+                Gson gson = new Gson();
+                String userName = SessionUtils.getUsername(request);
+                String json = gson.toJson(userName);
                 out.println(json);
                 out.flush();
             }

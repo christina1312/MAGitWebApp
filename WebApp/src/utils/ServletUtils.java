@@ -18,7 +18,7 @@ public class ServletUtils {
         return (UserManager) servletContext.getAttribute(USER_MANAGER_ATTRIBUTE_NAME);
     }
 
-    public static GitManager getRepositoryManager(ServletContext servletContext) {
+    public static GitManager getGitManager(ServletContext servletContext) {
         if (servletContext.getAttribute(BASIC_MAGIT_MANAGER_ATTRIBUTE_NAME) == null) {
             servletContext.setAttribute(BASIC_MAGIT_MANAGER_ATTRIBUTE_NAME, new GitManager());
         }
