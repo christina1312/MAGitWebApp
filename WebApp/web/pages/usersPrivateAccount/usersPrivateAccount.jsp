@@ -45,6 +45,8 @@
      <td><div width="20%" style="height:100%;max-height: 300px;overflow:auto;">
          Notifications:
          <br/>
+         <ul id="notificationlist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
+         </ul>
      </div>
      </td>
      <td><div  style="height:100%;max-height: 300px;overflow:auto;">
