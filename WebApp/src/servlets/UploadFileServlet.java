@@ -50,13 +50,13 @@ public class UploadFileServlet extends HttpServlet {
                 throw new Exception("you have to choose  xml file !");
             }
 
-            request.setAttribute("Massage" , "The file loaded successfully");
+            request.setAttribute("Message" , "The file loaded successfully");
             getServletContext().getRequestDispatcher("/pages/usersPrivateAccount/usersPrivateAccount.jsp").forward(request, response);
 
 
         } catch (Exception ex) {
 
-            request.setAttribute("Massage" , ex.getMessage());
+            request.setAttribute("Message" , ex.getMessage());
             getServletContext().getRequestDispatcher("/pages/usersPrivateAccount/usersPrivateAccount.jsp").forward(request, response);
         }
     }

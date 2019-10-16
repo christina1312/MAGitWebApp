@@ -4,6 +4,10 @@ import com.google.gson.Gson;
 import System.GitManager;
 import System.UserManager;
 import System.BasicMAGitManager;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+import org.codehaus.jackson.map.ObjectMapper;
 import utils.ServletUtils;
 import utils.SessionUtils;
 
@@ -14,6 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.lang.reflect.Type;
 import java.util.*;
 
 @WebServlet(name = "RepositoriesListServlet", urlPatterns = {"/pages/usersPrivateAccount/repositorieslist"})
@@ -29,24 +34,25 @@ public class RepositoriesListServlet extends HttpServlet {
                 Gson gson = new Gson();
                 GitManager gitManager = ServletUtils.getGitManager(getServletContext());
                 List<BasicMAGitManager> repositoriesList = gitManager.getRepositoriesByUserName(username);
-                Set<String> resList=new HashSet<String>();
+                List<Map<String, String>> resList = new ArrayList<>();
 
                 for(BasicMAGitManager manager: repositoriesList) {
-                    StringBuilder res = new StringBuilder();
-                    res.append("Repository name: "+ manager.getRepositoryName() +"<br/>" );
-                    res.append("Active branch name: "+ manager.getRepositoryActiveBranch() +"<br/>");
-                    res.append("Branch amount: "+ manager.getRepositoryBranchCount() +"<br/>" );
-                    res.append("Last commit time: "+ manager.getRepositoryLastCommitTime() +"<br/>" );
-                    res.append("Last commit message: "+ manager.getRepositoryLastCommitMessage() +"<br/>" );
-                    res.append("--------------------------------- " + "<br/>" );
+                    Map<String, String> tempMap=new HashMap<>();
 
-                    resList.add(res.toString());
+                    tempMap.put("RepositoryName", manager.getRepositoryName());
+                    tempMap.put("ActiveBranchName", manager.getRepositoryActiveBranch());
+                    tempMap.put("BranchAmount", manager.getRepositoryBranchCount());
+                    tempMap.put("LastCommitTime", manager.getRepositoryLastCommitTime());
+                    tempMap.put("LastCommitMessage", manager.getRepositoryLastCommitMessage());
+                    resList.add(tempMap);
                 }
 
-               // String json = gson.toJson(res);
-                String json = gson.toJson(resList);
-                out.println(json);
+                Type resultType = new TypeToken<List<Map<String, Object>>>(){}.getType();
+                String jsonRes = gson.toJson(resList,resultType);
+                out.println(jsonRes);
                 out.flush();
+            }catch (Exception ex){
+                System.out.println(ex.getMessage());
             }
         } else {
             String button = request.getParameter("button");

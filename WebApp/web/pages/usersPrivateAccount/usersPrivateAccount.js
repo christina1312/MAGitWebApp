@@ -4,6 +4,7 @@ var refreshRate = 2000; //mili seconds
 //var USER_LIST_URL = buildUrlWithContextPath("userslist");
 //var REPOSITORY_LIST_URL= buildUrlWithContextPath("repositorieslist");
 var  CHAT_LIST_URL= "";
+var username;
 
 function refreshUsersList(users) {
     //clear all current users
@@ -17,7 +18,6 @@ function refreshUsersList(users) {
         $('<li onclick="showUserRepositories(event)" id="'+ username +'">' + username + '</li>').appendTo($("#userslist"));
     });
 }
-
 function showUserRepositories(ev) {
     var userName = ev.target.id;
     $("#repositoriesUserlist").empty();
@@ -25,27 +25,45 @@ function showUserRepositories(ev) {
         url: "repositorieslist?method=getRepositoriesList&userName=" + userName,
         success: function (r) {
             console.log(r);
-            $('<li>' + r + '</li>').appendTo($("#repositoriesUserlist"));
+            r.forEach(function (info) {
+                    $('<li>  Repository name:  ' + info.RepositoryName + '<br/>' +
+                        'Active branch name: '+info.ActiveBranchName + '<br/>' +
+                        'Branch amount: '+info.BranchAmount + '<br/>' +
+                        'Last commit time: '+info.LastCommitTime + '<br/>' +
+                        'Last commit message: '+info.LastCommitMessage + '<br/>' +
+                        '</li>').appendTo($("#repositoriesUserlist"));
+            });
         }
     })
 }
 
-function refreshRepositoriesList(Repositories) {
+function showSingleRepository(event) {
+    document.location.href = "../singleRepositoryInformation/singleRepositoryInformation.html?repositoryName=" + event.target.id
+}
+
+function refreshRepositoriesList(r) {
     //clear all current users
     $("#repositorieslist").empty();
 
-    // rebuild the list of users: scan all users and add them to the list of users
-    $.each(Repositories || [], function(index, repositoryname) {
-        console.log("Adding repository #" + index + ": " + repositoryname);
-
-        //create a new <option> tag with a value in it and
-        //appeand it to the #userslist (div with id=userslist) element
-        $('<li>' + repositoryname + '</li>').appendTo($("#repositorieslist"));
-
-    });
-
+        r.forEach(function (info) {
+            $('<li onclick="showSingleRepository(event)" id="'+ info.RepositoryName +'">  Repository name:  ' + info.RepositoryName + '<br/>' +
+                'Active branch name: '+info.ActiveBranchName + '<br/>' +
+                'Branch amount: '+info.BranchAmount + '<br/>' +
+                'Last commit time: '+info.LastCommitTime + '<br/>' +
+                'Last commit message: '+info.LastCommitMessage + '<br/>' +
+                '</li>').appendTo($("#repositorieslist"));
+        });
 }
 
+function refreshNotificationsList(r) {
+    //clear all current users
+    $("#notificationlist").empty();
+
+    r.forEach(function (info) {
+        $('<li>  Repository name:  ' + info.RepositoryName + '<br/>' +
+            '</li>').appendTo($("#notificationlist"));
+    });
+}
 //entries = the added chat strings represented as a single string
 function appendToChatArea(entries) {
     $.each(entries || [], appendChatEntry);
@@ -82,25 +100,30 @@ function ajaxUsersList() {
 function ajaxRepositoriesList() {
 
     $.ajax({
-        url: "userslist?method=getCurrentUserName", //REPOSITORY_LIST_URL,
-        success: function (userName) {
-            $.ajax({
-                url: "repositorieslist?method=getRepositoriesList&userName=" + userName, //REPOSITORY_LIST_URL,
-                success: function (Repositories) {
-                    console.log("before callback repository list");
-                    refreshRepositoriesList(Repositories);
-                },
-                error: function(error) {
-                    console.log(error);
-                }
-            });
+        url: "repositorieslist?method=getRepositoriesList&userName=" + username, //REPOSITORY_LIST_URL,
+        success: function (Repositories) {
+            console.log("before callback repository list");
+            refreshRepositoriesList(Repositories);
         },
-        error: function(error) {
+        error: function (error) {
             console.log(error);
         }
     });
 }
 
+function ajaxNotificationList() {
+
+    $.ajax({
+        url: "notificationlist?username=" + username, //REPOSITORY_LIST_URL,
+        success: function (NotificationsList) {
+            console.log("before callback repository list");
+            refreshNotificationsList(NotificationsList);
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+}
 //call the server and get the chat version
 //we also send it the current chat version so in case there was a change
 //in the chat content, we will get the new string as well
@@ -127,10 +150,25 @@ function triggerAjaxChatContent() {
     setTimeout(ajaxChatContent, refreshRate);
 }
 
+function getUsername() {
+
+    $.ajax({
+        url: "userslist?method=getCurrentUserName", //REPOSITORY_LIST_URL,
+        success: function (userName) {
+            username = userName;
+        },
+        error: function(error) {
+            console.log(error);
+        }
+    });
+}
+
 //activate the timer calls after the page is loaded
 $(function() {
     //prevent IE from caching ajax calls
     $.ajaxSetup({cache: false});
+
+    getUsername();
 
     //The users list is refreshed automatically every second
     setInterval(ajaxUsersList, refreshRate);
@@ -138,6 +176,8 @@ $(function() {
     //The repositories list is refreshed automatically every second
     setInterval(ajaxRepositoriesList, refreshRate);
 
+    //The Notification list is refreshed automatically every second
+    setInterval(ajaxNotificationList, refreshRate);
     //The chat content is refreshed only once (using a timeout) but
     //on each call it triggers another execution of itself later (1 second later)
     triggerAjaxChatContent();

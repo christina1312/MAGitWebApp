@@ -37,7 +37,7 @@
             <% } %>
             <% } else {%>
             <h1>Welcome back, <%=usernameFromSession%></h1>
-            <a href="../usersPrivateAccount/usersPrivateAccount.html">Click here to enter the MAGit</a>
+            <a href="../usersPrivateAccount/usersPrivateAccount.jsp">Click here to enter the MAGit</a>
             <br/>
             <a href="login?logout=true" id="logout">logout</a>
             <% }%>
