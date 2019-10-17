@@ -12,7 +12,7 @@
     <%@ page import="constants.Constants" %>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Online Chat</title>
+        <title>Online Magit</title>
 <!--        Link the Bootstrap (from twitter) CSS framework in order to use its classes-->
         <link rel="stylesheet" href="../../common/bootstrap.min.css"/>
 <!--        Link jQuery JavaScript library in order to use the $ (jQuery) method-->

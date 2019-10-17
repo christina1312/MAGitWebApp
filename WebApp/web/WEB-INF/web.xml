@@ -54,6 +54,14 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>NotificationServlet</servlet-name>
-        <url-pattern>/pages/usersPrivateAccount/notifications</url-pattern>
+        <url-pattern>/pages/usersPrivateAccount/notificationslist</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>CollabotarionServlet</servlet-name>
+        <servlet-class>servlets.CollabotarionServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CollabotarionServlet</servlet-name>
+        <url-pattern>/pages/singleRepositoryInformation/collaboratin</url-pattern>
     </servlet-mapping>
 </web-app>

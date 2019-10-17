@@ -18,6 +18,20 @@ function refreshUsersList(users) {
         $('<li onclick="showUserRepositories(event)" id="'+ username +'">' + username + '</li>').appendTo($("#userslist"));
     });
 }
+
+function addNote(){
+    var note= "bla bla blaaa"
+    $.ajax({
+        type: "POST",
+        url: "notificationslist",
+        data: "note=" + note,
+        dataType: 'json',
+        success: function (r) {
+            console.log("note added");
+        }
+
+    })
+}
 function showUserRepositories(ev) {
     var userName = ev.target.id;
     $("#repositoriesUserlist").empty();
@@ -38,7 +52,7 @@ function showUserRepositories(ev) {
 }
 
 function showSingleRepository(event) {
-    document.location.href = "../singleRepositoryInformation/singleRepositoryInformation.html?repositoryName=" + event.target.id
+    document.location.href = "../singleRepositoryInformation/singleRepositoryInformation.jsp?repositoryName=" + event.target.id
 }
 
 function refreshRepositoriesList(r) {
@@ -57,13 +71,19 @@ function refreshRepositoriesList(r) {
 
 function refreshNotificationsList(r) {
     //clear all current users
-    $("#notificationlist").empty();
+    $("#notificationslist").empty();
 
-    r.forEach(function (info) {
-        $('<li>  Repository name:  ' + info.RepositoryName + '<br/>' +
-            '</li>').appendTo($("#notificationlist"));
-    });
+    if (r.length > 0) {
+        r.forEach(function (info) {
+            $('<li>' + info.message + '<br/>' + info.time + '<br/>' +
+                '</li>').appendTo($("#notificationslist"));
+        });
+    } else {
+        $('<li>There is no notification !' +
+            '</li>').appendTo($("#notificationslist"));
+    }
 }
+
 //entries = the added chat strings represented as a single string
 function appendToChatArea(entries) {
     $.each(entries || [], appendChatEntry);
@@ -111,12 +131,12 @@ function ajaxRepositoriesList() {
     });
 }
 
-function ajaxNotificationList() {
+function ajaxNotificationsList() {
 
     $.ajax({
-        url: "notificationlist?username=" + username, //REPOSITORY_LIST_URL,
+        url: "notificationslist?username=" + username, //REPOSITORY_LIST_URL,
         success: function (NotificationsList) {
-            console.log("before callback repository list");
+            console.log(NotificationsList);
             refreshNotificationsList(NotificationsList);
         },
         error: function (error) {
@@ -177,7 +197,7 @@ $(function() {
     setInterval(ajaxRepositoriesList, refreshRate);
 
     //The Notification list is refreshed automatically every second
-    setInterval(ajaxNotificationList, refreshRate);
+    setInterval(ajaxNotificationsList, refreshRate);
     //The chat content is refreshed only once (using a timeout) but
     //on each call it triggers another execution of itself later (1 second later)
     triggerAjaxChatContent();
