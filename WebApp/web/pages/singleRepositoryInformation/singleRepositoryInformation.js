@@ -10,17 +10,12 @@ $(function() {
     document.getElementById("repoName").innerHTML = REPOSITORYNAME;
 
     getRRName();
-    //The users list is refreshed automatically every second
+
+    getBranchesList();
+  //  The branches list is refreshed automatically every second
  //   setInterval(ajaxUsersList, refreshRate);
 
-    //The repositories list is refreshed automatically every second
-  //  setInterval(ajaxRepositoriesList, refreshRate);
 
-    //The Notification list is refreshed automatically every second
- //   setInterval(ajaxNotificationsList, refreshRate);
-    //The chat content is refreshed only once (using a timeout) but
-    //on each call it triggers another execution of itself later (1 second later)
-    //triggerAjaxChatContent();
 });
 
 function getRRName() {
@@ -35,5 +30,22 @@ function getRRName() {
             console.log(error);
         }
     });
+}
 
+function getBranchesList() {
+    $("#branchesList").empty();
+
+    $.ajax({
+        url: "collaboratin?method=getBranchesList&repoName=" + REPOSITORYNAME,
+            success: function (r) {
+                console.log(r);
+                r.forEach(function (info) {
+                    $('<li>  Branch name:  ' +info  + '<br/>' +
+                        '</li>').appendTo($("#brancheslist"));
+                });
+            },
+        error: function (error) {
+            console.log(error);
+        }
+    });
 }

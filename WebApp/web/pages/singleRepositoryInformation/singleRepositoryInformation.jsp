@@ -8,48 +8,36 @@
 </head>
 
 <body>
-<h1  id="repoName"  align="center" style="color:blue;">User Private Account</h1><br/>
+<h1  id="repoName"  align="center" style="color:blue;">Repo name</h1>
 <table border="1" style="width:100%;table-layout: fixed;">
     <tr height="20%">
         <td width="30%">
             <h4 id="remoteRepoName">
-                Remote Repository:
+                 Remote Repository:
+            </h4>
+            <h4 id="remoteUserName">
+                Remote user name:
             </h4>
         </td>
     </tr>
     <tr height="20%">
-        <td>
-            <div  style="height:100%;max-height: 300px;overflow:auto;">
+        <td max-height: 200px>
+            <div  style="height:100%;max-height: 200px;overflow:auto;">
             Branches list:
             <ul id="brancheslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
             </ul><br/>
             </div>
         </td>
-        <td width="25%">Single branch info:</td>
+        <td width="25%">Head branch :</td>
         <td width="25%">
-            <p>&nbsp;&nbsp;</p>
-            <p>checkout branch button&nbsp;</p>
-            <p>&nbsp;</p>
+            <button> checkout branch </button>
         </td>
         <td width="25%">
-            <p>Create new branch button&nbsp;</p>
+            <button>Create new branch</button>
         </td>
     </tr>
-    <tr height="20%">
-        <td  width="25%">
-            <h3 style="color:blue;">Collaboration</h3><br/>
-            <p>Pull button</p>
-            <p>&nbsp;</p>
-            <p>&nbsp;</p>
-        </td>
-        <td  width="25%">
-            <p>&nbsp;fork button</p>
-        </td>
-        <td  width="25%">&nbsp;
-            <p>Push new branch button</p>
-            <p>&nbsp;</p>
-        </td>
-        <td  width="25%">push button</td>
+    <tr height="10%">
+        //colaboration buttons
     </tr>
     <tr height="20%">
         <td width="25%">head branch commits list:</td>
@@ -57,14 +45,21 @@
             <p style="text-align: center;">WC</p>
         </td>
         <td width="25%">&nbsp;
-            <p>modify file button</p>
-            <p>delete file button</p>
-            <p>create new file button</p>
+            <button>modify file</button>
+            <button>delete file</button>
+            <button>create new file</button>
         </td>
     </tr>
     <tr height="20%">
-        <td width="25%">Notifiation</td>
-        <td width="25%">&nbsp;</td>
+        //<td width="25%">Notifiation</td>
+        <td><div width="20%" style="height:100%;max-height: 300px;overflow:auto;">
+            Notifications:
+            <button onclick="addNote(event)"> Add note</button>
+            <br/>
+            <ul id="notificationslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
+            </ul>
+        </div>
+        </td>
     </tr>
 </table>
 </body>
