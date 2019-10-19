@@ -57,11 +57,11 @@
         <url-pattern>/pages/usersPrivateAccount/notificationslist</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>CollabotarionServlet</servlet-name>
-        <servlet-class>servlets.CollabotarionServlet</servlet-class>
+        <servlet-name>CollaborationServlet</servlet-name>
+        <servlet-class>servlets.CollaborationServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>CollabotarionServlet</servlet-name>
-        <url-pattern>/pages/singleRepositoryInformation/collaboratin</url-pattern>
+        <servlet-name>CollaborationServlet</servlet-name>
+        <url-pattern>/pages/singleRepositoryInformation/collaboration</url-pattern>
     </servlet-mapping>
 </web-app>
