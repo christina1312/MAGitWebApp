@@ -7,6 +7,7 @@ import System.GitManager;
 import utils.SessionUtils;
 import System.BasicMAGitManager;
 import System.Commit;
+import System.Branch;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -28,14 +29,17 @@ public class CollaborationServlet extends HttpServlet {
        response.setContentType("application/json");
        String g = request.getParameter("method");
 
-       Gson gson = new Gson();
+       GitManager currGitManager = ServletUtils.getGitManager(getServletContext());       Gson gson = new Gson();
        String repoName = request.getParameter("repoName");
        String RRName = request.getParameter("RRName");
-       GitManager currGitManager = ServletUtils.getGitManager(getServletContext());
-       BasicMAGitManager repo = currGitManager.getRepositoryByUserName(username,repoName);
-       BasicMAGitManager rrRepo = currGitManager.getRepositoryByUserName(username,RRName); // todo get RR user name
-
+       BasicMAGitManager rrRepo = currGitManager.getRepositoryByUserName(username, RRName); // todo get RR user name
+       String LRPath="C:\\magit-ex3\\"+username;
        String json=null;
+       BasicMAGitManager repo=null;
+
+       if(!g.equalsIgnoreCase("fork")) {
+           repo = currGitManager.getRepositoryByUserName(username, repoName);
+       }
 
        switch (g) {
            case "getRemoteRepository": {
@@ -44,7 +48,7 @@ public class CollaborationServlet extends HttpServlet {
                break;
            }
            case "getBranchesList": {
-               Set<String> res = repo.getbranchsNameList();
+               Set<String> res = repo.getbranchesNameList();
                json = gson.toJson(res);
                break;
            }
@@ -103,9 +107,9 @@ public class CollaborationServlet extends HttpServlet {
            }
            case "pull": {
              try {
-                 String branchName = request.getParameter("branchName");
-                 List<String> delta = rrRepo.calculateDelta(branchName); // in RR side
-                 repo.pushAllChanges(delta);
+                 String branchName = request.getParameter("branchName"); // todo verify the branch name
+                 ArrayList<Commit> delta = rrRepo.pull();
+                 repo.updateBranchAfterPull(branchName,delta);
                  json = gson.toJson("Pulled successfully!");
              }
              catch(Exception ex){
@@ -116,8 +120,8 @@ public class CollaborationServlet extends HttpServlet {
            case "push": {
               try {
                   String branchName = request.getParameter("branchName");
-                  List<String> delta = repo.calculateDelta(branchName); // in LR side
-                  rrRepo.pushAllChanges(delta);
+                  Branch newBranch=repo.searchBranchByName(branchName); // in LR side
+                  rrRepo.createRRBranchesFiles(newBranch);
                   json = gson.toJson("Pushed successfully!");
               }
               catch(Exception ex){
@@ -125,7 +129,18 @@ public class CollaborationServlet extends HttpServlet {
               }
               break;
              }
-           case "clone": {
+           case "fork": {
+               try {
+                   repo = new BasicMAGitManager(username);
+                   String newRepoName=request.getParameter("newRepoName");
+                   String repositoryPath = request.getParameter("repositoryPath");
+                   repo.cloneRepository(repositoryPath, LRPath+"\\"+newRepoName, newRepoName);
+                   currGitManager.addRepository(repo,username);
+                   json = gson.toJson("Forked successfully!");
+               }
+               catch(Exception ex){
+                   json = gson.toJson(ex.getMessage());
+               }
                break;
            }
            case "createFile": {

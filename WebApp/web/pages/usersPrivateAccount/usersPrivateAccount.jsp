@@ -16,7 +16,6 @@
              <input type="file" name="file1" id="file1" /><br>
              <input type="Submit" value="Upload File" /><br>
          </form>
-         <a href="../../index.html">Home</a>
          <a href="../../logout">Logout</a>
          <br/><br/><br/>
          <% Object Message = request.getAttribute("Message");%>

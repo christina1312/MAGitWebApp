@@ -44,6 +44,7 @@ public class RepositoriesListServlet extends HttpServlet {
                     tempMap.put("BranchAmount", manager.getRepositoryBranchCount());
                     tempMap.put("LastCommitTime", manager.getRepositoryLastCommitTime());
                     tempMap.put("LastCommitMessage", manager.getRepositoryLastCommitMessage());
+                    tempMap.put("Path", manager.getRepositoryLocation()); // todo verify path
                     resList.add(tempMap);
                 }
 

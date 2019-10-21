@@ -40,7 +40,8 @@ function showUserRepositories(ev) {
         success: function (r) {
             console.log(r);
             r.forEach(function (info) {
-                    $('<li>  Repository name:  ' + info.RepositoryName + '<br/>' +
+
+                $('<li onclick="onCloneRepository(event)" id="'+info.Path+'" name="' +info.RepositoryName+'">  Repository name:  ' + info.RepositoryName + '<br/>' +
                         'Active branch name: '+info.ActiveBranchName + '<br/>' +
                         'Branch amount: '+info.BranchAmount + '<br/>' +
                         'Last commit time: '+info.LastCommitTime + '<br/>' +
@@ -49,6 +50,31 @@ function showUserRepositories(ev) {
             });
         }
     })
+}
+
+function onCloneRepository(event) {
+    var repositoryPath = event.target.id;
+    var newRepoName=event.target.attributes.name.value;
+ //   repositoryPath = "C:%5Cmagit-ex3%5Cbb%5Crepo 2";
+    repositoryPath = repositoryPath.replace(/\\/g, "%5C");
+    var txt;
+    if (confirm("Do you want to fork this repository?")) {
+        $.ajax({
+            url: "/Web_war/pages/singleRepositoryInformation/collaboration?method=fork&repositoryPath=" + repositoryPath+
+            "&newRepoName="+ newRepoName,
+            success: function (message) {
+            txt=message;
+            alert(txt);
+            },
+            error: function(message) {
+                txt=message;
+                alert(txt);
+            }
+        });
+    } else {
+        txt="You canceled the operation!";
+        alert(txt);
+    }
 }
 
 function showSingleRepository(event) {

@@ -19,7 +19,16 @@
             <h4 id="remoteUserName">
                 Remote user name:
             </h4>
+            <a href="../usersPrivateAccount/usersPrivateAccount.jsp">Back</a>
         </td>
+<%--        <td width="25%" style="max-height: 100px">--%>
+<%--            <h5 >Please enter repository name for fork:</h5>--%>
+<%--            <input id="fork" type="text" name="repositoryName" class=""/>--%>
+<%--            <button onclick="onClickForkButton(event)">Fork</button>--%>
+<%--            <div>--%>
+<%--                <h5 id="forkMessage" style="color: blue;"></h5>--%>
+<%--            </div>--%>
+<%--        </td>--%>
         <td width="25%" style="max-height: 100px">
             <h5 >Please enter branch name for push:</h5>
             <input id="push" type="text" name="branchName" class=""/>

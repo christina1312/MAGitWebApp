@@ -37,7 +37,7 @@ function onClickCheckoutButton() {
 }
 
 function onClickPushButton() {
-    var BranchName=document.getElementById("checkout").value;
+    var BranchName=document.getElementById("push").value;
     $.ajax({
         url: "collaboration?method=push&repoName=" + REPOSITORYNAME +
             "&branchName=" + BranchName,
@@ -54,7 +54,7 @@ function onClickPushButton() {
 }
 
 function onClickPullButton() {
-    var BranchName=document.getElementById("checkout").value;
+    var BranchName=document.getElementById("pull").value;
     $.ajax({
         url: "collaboration?method=pull&repoName=" + REPOSITORYNAME+
             "&branchName=" + BranchName,
@@ -70,6 +70,23 @@ function onClickPullButton() {
     });
 }
 
+function onClickForkButton() {
+    var repositoryNameForFork=document.getElementById("fork").value;
+ //   repositoryNameForFork = repositoryNameForFork.replace(\\/g, \\);
+    $.ajax({
+        url: "collaboration?method=fork&repoName=" + REPOSITORYNAME +
+            "&repositoryNameForFork=" + repositoryNameForFork,
+        success: function (message) {
+            document.getElementById("forkMessage").innerText = message;
+            document.getElementById("fork").value= " ";
+            getHeadBranchName();
+        },
+        error: function (message) {
+            console.log(message);
+            document.getElementById("fork").value=" ";
+        }
+    });
+}
 function onCreateFile() {
     // var BranchName=document.getElementById("checkout").value;
     // $.ajax({
