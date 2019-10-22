@@ -1,11 +1,14 @@
 package servlets;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import utils.ServletUtils;
 import System.GitManager;
 import utils.SessionUtils;
 import System.BasicMAGitManager;
+import System.NotificationManager;
 import System.Commit;
 import System.Branch;
 
@@ -32,7 +35,7 @@ public class CollaborationServlet extends HttpServlet {
        GitManager currGitManager = ServletUtils.getGitManager(getServletContext());       Gson gson = new Gson();
        String repoName = request.getParameter("repoName");
        String RRName = request.getParameter("RRName");
-       BasicMAGitManager rrRepo = currGitManager.getRepositoryByUserName(username, RRName); // todo get RR user name
+       BasicMAGitManager rrRepo = currGitManager.getRepositoryByUserName("INCOGNITO", RRName); // todo get RR user name
        String LRPath="C:\\magit-ex3\\"+username;
        String json=null;
        BasicMAGitManager repo=null;
@@ -98,7 +101,7 @@ public class CollaborationServlet extends HttpServlet {
            case "getCommitsFileslist": {
                try {
                    String commitName = request.getParameter("commitName");
-                   List<String> res = repo.getCommitsFileslist(commitName);
+                   List<String> res = repo.getCommitsFileslist(commitName, false);
                    json = gson.toJson(res);
                } catch (Exception ex) {
                    json = gson.toJson(ex.getMessage());
@@ -108,9 +111,13 @@ public class CollaborationServlet extends HttpServlet {
            case "pull": {
              try {
                  String branchName = request.getParameter("branchName"); // todo verify the branch name
-                 ArrayList<Commit> delta = rrRepo.pull();
-                 repo.updateBranchAfterPull(branchName,delta);
-                 json = gson.toJson("Pulled successfully!");
+                 if(repo.checkBeforePull(branchName)) {
+                     Branch RB = repo.searchBranchByName(RRName + "\\" + branchName);
+                     ArrayList<Commit> delta = rrRepo.pull(RB, branchName);
+                     repo.updateBranchAfterPull(branchName, delta);
+                     json = gson.toJson("Pulled successfully!");
+                 }
+                 // else throws execption todo check it !!
              }
              catch(Exception ex){
                  json = gson.toJson(ex.getMessage());
@@ -131,25 +138,80 @@ public class CollaborationServlet extends HttpServlet {
              }
            case "fork": {
                try {
-                   repo = new BasicMAGitManager(username);
-                   String newRepoName=request.getParameter("newRepoName");
-                   String repositoryPath = request.getParameter("repositoryPath");
-                   repo.cloneRepository(repositoryPath, LRPath+"\\"+newRepoName, newRepoName);
-                   currGitManager.addRepository(repo,username);
-                   json = gson.toJson("Forked successfully!");
+                   String repoUserName = request.getParameter("repoUserName");
+                   if(!username.equalsIgnoreCase(repoUserName)) {
+
+
+                       repo = new BasicMAGitManager(username);
+                       String repositoryPath = request.getParameter("repositoryPath");
+                       repo.cloneRepository(repositoryPath, LRPath + "\\" + repoName, repoName);
+                       currGitManager.addRepository(repo, username);
+
+                       String message = repoName + " forked by " + username;
+                       currGitManager.addUserNotification(repoUserName, message);
+                       json = gson.toJson("Forked successfully!");
+                   }
+                   else
+                   {
+                       json = gson.toJson("You cannot fork your own repository!");
+                   }
                }
                catch(Exception ex){
                    json = gson.toJson(ex.getMessage());
                }
                break;
            }
+           case "getcurrentCommitFiles": {
+               try {
+                   List<String> res = repo.getcurrentCommitFiles(true);
+                   json = gson.toJson(res);
+               }
+            catch (Exception ex) {
+               json = gson.toJson(ex.getMessage());
+           }
+               break;
+           }
+           case "commit": {
+               try {
+                   repo.DoCommit("newCommit");
+                   json = gson.toJson("All changes committed successfully!");
+               }catch (Exception ex) {
+                   json = gson.toJson(ex.getMessage());
+               }
+               break;
+           }
+           case "getFileContent": {
+               try {
+                   String path = request.getParameter("path");
+                   String res = repo.getFileContent(path);
+                   Map<String, String> tempMap = new HashMap<>();
+                   tempMap.put("path",path);
+                   tempMap.put("content", res);
+                   Type resultType = new TypeToken<Map<String, String>>() {
+                   }.getType();
+                   json = gson.toJson(tempMap, resultType);
+
+               }catch (Exception ex) {
+                   json = gson.toJson(ex.getMessage());
+               }
+               break;
+           }
            case "createFile": {
+               String path = request.getParameter("path");
+               String newContent = request.getParameter("content");
+               String newfilename = request.getParameter("newfilename");
+               repo.createNewFile(path, newContent,newfilename);
                break;
            }
            case "deleteFile": {
+               String path = request.getParameter("path");
+               repo.deleteFile(path);
                break;
            }
-           case "modifyFile": {
+           case "editFile": {
+               String path = request.getParameter("path");
+               String newContent = request.getParameter("content");
+               repo.editFile(path, newContent);
                break;
            }
        }

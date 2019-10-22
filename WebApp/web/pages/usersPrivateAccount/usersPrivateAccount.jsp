@@ -4,10 +4,14 @@
     <title></title>
     <script type="text/javascript" src="../../common/jquery-2.0.3.min.js"></script>
     <script src="usersPrivateAccount.js"></script>
+    <link rel="stylesheet" type="text/css" href="usersPrivateAccount.css"/>
 
 </head>
 <body>
 <h1 align="center" style="color:blue;">User Private Account</h1><br/>
+
+<div class="tableDiv" >
+
 <table border="1" style="width:100%;table-layout: fixed;">
  <tr>
      <td width="20%" style="height: 300px;">
@@ -43,7 +47,7 @@
  <tr>
      <td><div width="20%" style="height:100%;max-height: 300px;overflow:auto;">
          Notifications:
-         <button onclick="addNote(event)"> Add note</button>
+<%--         <button onclick="addNote(event)"> Add note</button>--%>
          <br/>
          <ul id="notificationslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
          </ul>
@@ -58,5 +62,6 @@
      </td>
  </tr>
 </table>
+</div>
 </body>
 </html>

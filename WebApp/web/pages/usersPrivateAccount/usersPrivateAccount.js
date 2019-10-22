@@ -41,7 +41,7 @@ function showUserRepositories(ev) {
             console.log(r);
             r.forEach(function (info) {
 
-                $('<li onclick="onCloneRepository(event)" id="'+info.Path+'" name="' +info.RepositoryName+'">  Repository name:  ' + info.RepositoryName + '<br/>' +
+                $('<li onclick="onCloneRepository(event)" username="'+userName+'" id="'+info.Path+'" name="' +info.RepositoryName+'">  Repository name:  ' + info.RepositoryName + '<br/>' +
                         'Active branch name: '+info.ActiveBranchName + '<br/>' +
                         'Branch amount: '+info.BranchAmount + '<br/>' +
                         'Last commit time: '+info.LastCommitTime + '<br/>' +
@@ -54,14 +54,15 @@ function showUserRepositories(ev) {
 
 function onCloneRepository(event) {
     var repositoryPath = event.target.id;
-    var newRepoName=event.target.attributes.name.value;
+    var repoName=event.target.attributes.name.value;
+    var repoUserName=event.target.attributes.username.value;
  //   repositoryPath = "C:%5Cmagit-ex3%5Cbb%5Crepo 2";
     repositoryPath = repositoryPath.replace(/\\/g, "%5C");
     var txt;
     if (confirm("Do you want to fork this repository?")) {
         $.ajax({
             url: "/Web_war/pages/singleRepositoryInformation/collaboration?method=fork&repositoryPath=" + repositoryPath+
-            "&newRepoName="+ newRepoName,
+            "&repoName="+ repoName + "&repoUserName="+ repoUserName,
             success: function (message) {
             txt=message;
             alert(txt);

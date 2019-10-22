@@ -3,6 +3,7 @@ package servlets;
 import utils.SessionUtils;
 import utils.ServletUtils;
 import System.UserManager;
+import System.GitManager;
 import constants.Constants;
 
 import javax.servlet.ServletException;
@@ -18,9 +19,11 @@ public class LogoutServlet extends HttpServlet {
             throws IOException, ServletException {
         String usernameFromSession = SessionUtils.getUsername(request);
         UserManager userManager = ServletUtils.getUserManager(getServletContext());
+        GitManager currGitManager = ServletUtils.getGitManager(getServletContext());
 
         if (usernameFromSession != null) {
             userManager.removeUser(usernameFromSession);
+            currGitManager.deleteAllUserNotification(usernameFromSession);
             SessionUtils.clearSession(request);
             request.setAttribute(Constants.USER_NAME_LOGOUT, usernameFromSession);
             response.sendRedirect(request.getContextPath() + "/index.html");

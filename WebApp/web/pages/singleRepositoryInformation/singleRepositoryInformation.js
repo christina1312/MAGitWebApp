@@ -15,6 +15,7 @@ $(function() {
     getHeadBranchName();
     getBranchesList();
     setInterval(ajaxHeadBranchCommitsList, refreshRate);
+    setInterval(ajaxCurrentCommitFiles, refreshRate);
 
 });
 
@@ -39,6 +40,7 @@ function onClickCheckoutButton() {
 function onClickPushButton() {
     var BranchName=document.getElementById("push").value;
     $.ajax({
+
         url: "collaboration?method=push&repoName=" + REPOSITORYNAME +
             "&branchName=" + BranchName,
         success: function (message) {
@@ -57,7 +59,7 @@ function onClickPullButton() {
     var BranchName=document.getElementById("pull").value;
     $.ajax({
         url: "collaboration?method=pull&repoName=" + REPOSITORYNAME+
-            "&branchName=" + BranchName,
+            "&branchName=" + BranchName + "&RRName=" + RRName,
         success: function (message) {
             document.getElementById("pullMessage").innerText = message;
             document.getElementById("pull").value="";
@@ -70,72 +72,51 @@ function onClickPullButton() {
     });
 }
 
-function onClickForkButton() {
-    var repositoryNameForFork=document.getElementById("fork").value;
- //   repositoryNameForFork = repositoryNameForFork.replace(\\/g, \\);
+function onCreateFile() {
+
+    $("#fileContent").empty();
+    // document.getElementById("fileContent").readOnly =false;
+    var content =  document.getElementById("fileContent").value ;
+    var path = document.getElementById("fileContent").name;
     $.ajax({
-        url: "collaboration?method=fork&repoName=" + REPOSITORYNAME +
-            "&repositoryNameForFork=" + repositoryNameForFork,
+        url: "collaboration?method=createFile&path="+ path+
+            "&repoName=" + REPOSITORYNAME + "&content=" + content,
+        success: function (r) {
+            console.log(r);
+            document.getElementById("fileContent").innerHTML = r.content;
+            document.getElementById("fileContent").name = r.path;
+            document.getElementById("fileContent").readOnly =true;
+        }
+    })
+}
+
+function onEditFile() {
+   // document.getElementById("saveButton").style.visibility = 'visible';
+    document.getElementById("fileContent").readOnly =false;
+    console.log(document.getElementById("fileContent").name);
+
+}
+function onAddFile(){
+    var prompt1 = prompt("Please enter new file name");
+    if (prompt1 != null) {
+        alert("Please enter new file content in the 'File content' area and press 'create new file'!");
+    }
+}
+function onDeleteFile() {
+    var path= document.getElementById("fileContent").name;
+    $.ajax({
+        url: "collaboration?method=deleteFile&repoName=" + REPOSITORYNAME+
+        "&path=" +path,
         success: function (message) {
-            document.getElementById("forkMessage").innerText = message;
-            document.getElementById("fork").value= " ";
+            document.getElementById("deleteFileMessage").innerText = message;
+            document.getElementById("deleteFile").value="";
             getHeadBranchName();
         },
         error: function (message) {
             console.log(message);
-            document.getElementById("fork").value=" ";
+            document.getElementById("deleteFile").value="";
         }
     });
-}
-function onCreateFile() {
-    // var BranchName=document.getElementById("checkout").value;
-    // $.ajax({
-    //     url: "collaboration?method=createFile&repoName=" + REPOSITORYNAME+
-    //         "&branchName=" + BranchName, // todo
-    //     success: function (message) {
-    //         document.getElementById("CreateFileMessage").innerText = message;
-    //         document.getElementById("CreateFile").value="";
-    //         getHeadBranchName();
-    //     },
-    //     error: function (message) {
-    //         console.log(message);
-    //         document.getElementById("CreateFile").value="";
-    //     }
-    // });
-}
-
-function onModifyFile() {
-  // //  var BranchName=document.getElementById("checkout").value;
-  //   $.ajax({
-  //       url: "collaboration?method=pull&repoName=" + REPOSITORYNAME, //todo
-  //      //     "&branchName=" + BranchName,
-  //       success: function (message) {
-  //           document.getElementById("ModifyFileMessage").innerText = message;
-  //           document.getElementById("ModifyFile").value="";
-  //           getHeadBranchName();
-  //       },
-  //       error: function (message) {
-  //           console.log(message);
-  //           document.getElementById("ModifyFile").value="";
-  //       }
-  //   });
-}
-
-function onDeleteFile() {
-   // // var BranchName=document.getElementById("checkout").value;
-   //  $.ajax({
-   //      url: "collaboration?method=deleteFile&repoName=" + REPOSITORYNAME,
-   //        //  "&branchName=" + BranchName, // todo
-   //      success: function (message) {
-   //          document.getElementById("deleteFileMessage").innerText = message;
-   //          document.getElementById("deleteFile").value="";
-   //          getHeadBranchName();
-   //      },
-   //      error: function (message) {
-   //          console.log(message);
-   //          document.getElementById("deleteFile").value="";
-   //      }
-   //  });
 }
 
 function onClickCreateNewBranchButton() {
@@ -152,6 +133,24 @@ function onClickCreateNewBranchButton() {
         error: function (message) {
             console.log(message);
             document.getElementById("createNewBranch").value="";
+        }
+    });
+}
+
+function getRRName() {
+
+    $.ajax({
+        url: "collaboration?method=getRemoteRepository&repoName=" + REPOSITORYNAME,
+        success: function (rrName) {
+            if(rrName== null) {
+                rrName="There is no remote repository :(";
+            }
+            var prefix = document.getElementById("remoteRepoName").innerHTML;
+            document.getElementById("remoteRepoName").innerHTML = prefix + " " + rrName;
+            RRName=rrName;
+        },
+        error: function (error) {
+            console.log(error);
         }
     });
 }
@@ -218,6 +217,80 @@ function ajaxHeadBranchCommitsList() {
     });
 }
 
+function ajaxCurrentCommitFiles() {
+
+    $.ajax({
+        url: "collaboration?method=getcurrentCommitFiles&repoName=" + REPOSITORYNAME ,
+        success: function(commits) {
+            console.log("before callback");
+            refreshCurrentCommitFile(commits);
+        },
+        error: function(error){
+            console.log(error);
+        }
+    });
+}
+function refreshCurrentCommitFile(r) {
+    //clear all current users
+    $("#currentCommitFiles").empty();
+
+    r.forEach(function (path) {
+        var split = path.split(/\\/);
+        var fileName = split[split.length-1];
+        $('<li onclick="onClickFile(event)" id="'+ path +'">' + fileName + '</li>').appendTo($("#currentCommitFiles"));
+
+    });
+}
+function onCommit(event){
+    var commitMessage=document.getElementById("commitMessage").value;
+    $.ajax({
+
+        url: "collaboration?method=commit&repoName=" + REPOSITORYNAME
+            + "&commitMessage=" + commitMessage,
+        success: function (message) {
+            document.getElementById("commitMessage").innerText = message;
+            document.getElementById("commit").value="";
+        },
+        error: function (message) {
+            console.log(message);
+            document.getElementById("commit").value="";
+        }
+    });
+}
+
+function onClickFile(event){
+    $("#fileContent").empty();
+
+    var path = event.target.id.replace(/\\/g, "%5C");
+    $.ajax({
+        url: "collaboration?method=getFileContent&path="+ path+
+            "&repoName=" + REPOSITORYNAME,
+        success: function (r) {
+            console.log(r);
+            document.getElementById("fileContent").value = r.content;
+            document.getElementById("fileContent").name = r.path;
+            document.getElementById("fileContent").readOnly =true;
+        }
+    })
+}
+
+function onSave(event){
+    $("#fileContent").empty();
+   // document.getElementById("fileContent").readOnly =false;
+
+    var content =  document.getElementById("fileContent").value ;
+    var path = document.getElementById("fileContent").name;
+    $.ajax({
+        url: "collaboration?method=editFile&path="+ path+
+            "&repoName=" + REPOSITORYNAME + "&content=" + content,
+        success: function (r) {
+            console.log(r);
+            document.getElementById("fileContent").innerHTML = r.content;
+            document.getElementById("fileContent").name = r.path;
+            document.getElementById("fileContent").readOnly =true;
+        }
+    })
+}
 function refreshHeadBranchCommitsList(commits) {
     //clear all current users
     $("#headBranchCommitsList").empty();
@@ -243,7 +316,9 @@ function showSingleCommitInfo(ev) {
         success: function (r) {
             console.log(r);
             r.forEach(function (info) {
-                $('<li>  File name:  ' + info + '<br/>' +
+                var split = info.split(/\\/);
+                var fileName = split[split.length-1];
+                $('<li>  File name:  ' + fileName + '<br/>' +
                     '</li>').appendTo($("#commitFileslist"));
             });
         }

@@ -5,7 +5,7 @@
     <title>Single repository information</title>
     <script type="text/javascript" src="../../common/jquery-2.0.3.min.js"></script>
     <script src="singleRepositoryInformation.js"></script>
-    <script src="singleRepositoryInformation.css"></script>
+    <link rel="stylesheet" type="text/css" href="singleRepositoryInformation.css"/>
 </head>
 
 <body>
@@ -19,20 +19,15 @@
             <h4 id="remoteUserName">
                 Remote user name:
             </h4>
+            <h4 id="myUserName">
+                My user name:
+            </h4>
             <a href="../usersPrivateAccount/usersPrivateAccount.jsp">Back</a>
         </td>
-<%--        <td width="25%" style="max-height: 100px">--%>
-<%--            <h5 >Please enter repository name for fork:</h5>--%>
-<%--            <input id="fork" type="text" name="repositoryName" class=""/>--%>
-<%--            <button onclick="onClickForkButton(event)">Fork</button>--%>
-<%--            <div>--%>
-<%--                <h5 id="forkMessage" style="color: blue;"></h5>--%>
-<%--            </div>--%>
-<%--        </td>--%>
         <td width="25%" style="max-height: 100px">
             <h5 >Please enter branch name for push:</h5>
             <input id="push" type="text" name="branchName" class=""/>
-            <button onclick="onClickPushButton(event)">Push</button>
+            <button class="button" onclick="onClickPushButton(event)">Push</button>
             <div>
                 <h5 id="pushMessage" style="color: blue;"></h5>
             </div>
@@ -41,7 +36,7 @@
             <h5>Please enter branch name for pull:</h5>
             <input id="pull" type="text" name="branchName" class=""/>
 
-            <button onclick="onClickPullButton(event)">Pull</button>
+            <button class="button" onclick="onClickPullButton(event)">Pull</button>
             <div>
                 <h5 id="pullMessage" style="color: blue;"></h5>
             </div>
@@ -53,7 +48,7 @@
             <input id="base" type="text" name="baseName" class=""/>
             <h5>Please enter message:</h5>
             <input id="message" type="text" name="PRmessage" class=""/>
-            <button onclick="onClickPullButton(event)">Create PR</button>
+            <button class="button"  onclick="onClickPullButton(event)">Create PR</button>
         </td>
     </tr>
     <tr height="20%">
@@ -74,7 +69,7 @@
         <td width="25%" style="max-height: 150px">
             <h5>Please enter branch name for checkout:</h5>
             <input id="checkout" type="text" name="branchName" class=""/>
-            <button onclick="onClickCheckoutButton(event)"> Checkout</button>
+            <button class="button" onclick="onClickCheckoutButton(event)"> Checkout</button>
             <div>
                 <h5 id="checkoutMessage" style="color: blue;"></h5>
             </div>
@@ -82,7 +77,7 @@
         <td width="25%" style="max-height: 150px">
             <h5>Please enter new branch name :</h5>
             <input id="createNewBranch" type="text" name="branchName" class=""/>
-            <button onclick="onClickCreateNewBranchButton(event)"> Create</button>
+            <button class="button" onclick="onClickCreateNewBranchButton(event)"> Create</button>
             <div>
                 <h5 id="createNewBranchMessage" style="color: blue;"></h5>
             </div>
@@ -97,12 +92,25 @@
             </div>
         </td>
         <td colspan="2" rowspan="2">
-            <p style="text-align: center;">WC</p>
+            <div style="height:100%;max-height: 150px;overflow:auto;">
+                This is your working copy ( All the files of the current commit) :) <button onclick="onAddFile(event)" id="addButton">+</button>
+                <ul id="currentCommitFiles" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
+                </ul><br/>
+            </div>
+
         </td>
         <td width="25%" >&nbsp;
-            <button onclick="onModifyFile(event)">modify file</button>
-            <button onclick="onDeleteFile(event)" >delete file</button>
-            <button onclick="onCreateFile(event)">create new file</button>
+
+            <h5>File content :
+            </h5>
+            <textarea id="fileContent" rows="4" cols="40" >
+            </textarea>
+
+            <button class="button"  onclick="onEditFile(event)">edit file</button>
+            <button class="button" onclick="onSave(event)" id="saveButton" >Save</button>
+            <button class="button" class="button" onclick="onDeleteFile(event)" >delete file</button>
+            <button class="button" onclick="onCreateFile(event)">create new file</button>
+
         </td>
     </tr>
     <tr height="20%" style="max-height: 150px">
@@ -112,12 +120,20 @@
                 <ul id="commitFileslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
                 </ul><br/>
             </div>
+
+            <h5>Please enter commit message :</h5>
+            <input id="commit" type="text" name="commitMessage" class=""/>
+            <button onclick="onCommit(event)"> commit</button>
+            <div>
+                <h5 id=commitMessage" style="color: blue;"></h5>
+            </div>
         </td>
     </tr>
     <tr height="20%" style="max-height: 150px">
+
         <td><div width="20%" style="height:100%;max-height: 150px;overflow:auto;">
             Notifications:
-            <button onclick="addNote(event)"> Add note</button>
+<%--            <button onclick="addNote(event)"> Add note</button>--%>
             <br/>
             <ul id="notificationslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
             </ul>

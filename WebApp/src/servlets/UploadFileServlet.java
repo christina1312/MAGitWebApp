@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "UploadFileServlet", urlPatterns = {"/pages/usersPrivateAccount/uploadfile"})
 @MultipartConfig
@@ -25,7 +27,8 @@ public class UploadFileServlet extends HttpServlet {
         File XmlObj;
         try {
             String ss =request.getParameter("fAddr");
-            for (Part part : request.getParts()) {
+            List<Part> fileParts = request.getParts().stream().filter(part -> "file1".equals(part.getName())).collect(Collectors.toList());
+            for (Part part : fileParts) {
                 String fileName = extractFileName(part);
                 if (fileName.endsWith(".xml")) {
                     xmlFile = fileName;
@@ -38,12 +41,12 @@ public class UploadFileServlet extends HttpServlet {
                 }
             }
             GitManager magitDataHolder = ServletUtils.getGitManager(getServletContext());
+            String userName = SessionUtils.getUsername(request);
             if (xmlFile != null) {
-                if (magitDataHolder.isRepositoryExists(xmlFile)) {
+                if (magitDataHolder.isRepositoryExists(userName,xmlFile)) {
                     throw new Exception("The name already exists ,please choose different name");
                 }
-                String userName = SessionUtils.getUsername(request);
-                magitDataHolder.addRepository(xmlFile, path, userName);
+                magitDataHolder.addRepository(path, userName);
             }
             else
             {

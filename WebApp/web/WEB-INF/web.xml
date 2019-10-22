@@ -64,4 +64,10 @@
         <servlet-name>CollaborationServlet</servlet-name>
         <url-pattern>/pages/singleRepositoryInformation/collaboration</url-pattern>
     </servlet-mapping>
+
+    <listener>
+        <listener-class>
+            servlets.MyAppServletContextListener
+        </listener-class>
+    </listener>
 </web-app>
