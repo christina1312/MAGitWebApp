@@ -30,14 +30,18 @@
      </td>
      <td width="50%" rowspan="2" >
          <div style="height:100%;max-height: 600px;overflow:auto;">
-             Repositories list
+             <h5>
+              Repositories list:
+             </h5>
              <ul id="repositorieslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
              </ul>
          </div>
 
      </td>
      <td><div style="height:100%;max-height: 300px;overflow:auto;">
-         Users list:
+         <h5>
+            Users list:
+         </h5>
          <br/>
          <ul id="userslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
          </ul>
@@ -46,7 +50,9 @@
  </tr>
  <tr>
      <td><div width="20%" style="height:100%;max-height: 300px;overflow:auto;">
-         Notifications:
+         <h5>
+            Notifications:
+         </h5>
 <%--         <button onclick="addNote(event)"> Add note</button>--%>
          <br/>
          <ul id="notificationslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
@@ -54,7 +60,9 @@
      </div>
      </td>
      <td><div  style="height:100%;max-height: 300px;overflow:auto;">
-         Users Repositories List:
+         <h5>
+          Users Repositories List:
+         </h5>
          <ul id="repositoriesUserlist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
          </ul>
          <br/>

@@ -163,12 +163,25 @@ public class CollaborationServlet extends HttpServlet {
            }
            case "getcurrentCommitFiles": {
                try {
-                   List<String> res = repo.getcurrentCommitFiles(true);
+                   List<String> res = repo.getCurrentWorkingCopyFileslist();
                    json = gson.toJson(res);
                }
             catch (Exception ex) {
                json = gson.toJson(ex.getMessage());
            }
+               break;
+           }
+           case "getWorkingCopyChanges": {
+               try {
+                   Map<String,List<String >> res = repo.ShowWorkingCopyStatus();
+
+                   Type resultType = new TypeToken<Map<String, String>>() {
+                   }.getType();
+                   json = gson.toJson(res, resultType);
+               }
+               catch (Exception ex) {
+                   json = gson.toJson(ex.getMessage());
+               }
                break;
            }
            case "commit": {
@@ -197,21 +210,64 @@ public class CollaborationServlet extends HttpServlet {
                break;
            }
            case "createFile": {
-               String path = request.getParameter("path");
-               String newContent = request.getParameter("content");
-               String newfilename = request.getParameter("newfilename");
-               repo.createNewFile(path, newContent,newfilename);
+               try {
+                   String path = request.getParameter("pathFromPrompt");
+                   String name = request.getParameter("nameFromPrompt");
+                   if(name!=null && name!="") {
+                       String newContent = request.getParameter("content");
+                       String pathToCheck="";
+                       if (path.equalsIgnoreCase(""))
+                           pathToCheck = LRPath + "\\" + repoName + "\\" + name+".txt";
+                       else {
+                               pathToCheck = LRPath + "\\" + repoName + "\\" + path + "\\" + name+".txt";
+                       }
+                       if (!repo.checkIfFileExistsInLocation(pathToCheck)) {
+                           repo.createNewFile(pathToCheck, newContent);
+                           json = gson.toJson("'"+name+".txt"+"'" + " has been created successfully!");
+                       } else {
+                           json = gson.toJson(name + " is already exists in the given path!");
+                       }
+                   }
+                   else {
+                       json = gson.toJson("File name cannot be empty!");
+                   }
+               } catch (Exception ex) {
+                   json = gson.toJson(ex.getMessage());
+               }
+               break;
+           }
+           case "checkLocationPath": {
+               String path = request.getParameter("pathFromPrompt");
+               if(path.equalsIgnoreCase("")) {
+                   json = gson.toJson("OK");
+                   break;
+               }
+               if (!repo.checkIfFileExistsInLocation(LRPath + "\\" + repoName + "\\" + path))
+                   json = gson.toJson("The path " + "'" + path + "'" + " doesnt exists!");
+               else
+                   json = gson.toJson("OK");
                break;
            }
            case "deleteFile": {
-               String path = request.getParameter("path");
-               repo.deleteFile(path);
+               try {
+                   String path = request.getParameter("path");
+                   repo.deleteFile(path);
+                   json = gson.toJson("The file was deleted !");
+
+               } catch (Exception ex) {
+                   json = gson.toJson(ex.getMessage());
+               }
                break;
            }
            case "editFile": {
-               String path = request.getParameter("path");
-               String newContent = request.getParameter("content");
-               repo.editFile(path, newContent);
+               try {
+                   String path = request.getParameter("path");
+                   String newContent = request.getParameter("content");
+                   repo.editFile(path, newContent);
+                   json = gson.toJson("The file was edited !");
+               } catch (Exception ex) {
+                   json = gson.toJson(ex.getMessage());
+               }
                break;
            }
        }

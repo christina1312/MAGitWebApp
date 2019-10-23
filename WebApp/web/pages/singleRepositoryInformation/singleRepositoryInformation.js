@@ -1,6 +1,8 @@
 var REPOSITORYNAME;
 var RRName;
 var refreshRate = 2000; //mili seconds
+var nameFromPrompt;
+var pathFromPrompt;
 //activate the timer calls after the page is loaded
 $(function() {
     //prevent IE from caching ajax calls
@@ -12,6 +14,7 @@ $(function() {
     document.getElementById("repoName").innerHTML = REPOSITORYNAME;
 
     getRRName();
+    showWorkingCopyStatus();
     getHeadBranchName();
     getBranchesList();
     setInterval(ajaxHeadBranchCommitsList, refreshRate);
@@ -74,47 +77,64 @@ function onClickPullButton() {
 
 function onCreateFile() {
 
-    $("#fileContent").empty();
-    // document.getElementById("fileContent").readOnly =false;
-    var content =  document.getElementById("fileContent").value ;
-    var path = document.getElementById("fileContent").name;
+    var content = document.getElementById("fileContent").value;
+    document.getElementById("fileContent").value = "";
     $.ajax({
-        url: "collaboration?method=createFile&path="+ path+
-            "&repoName=" + REPOSITORYNAME + "&content=" + content,
-        success: function (r) {
-            console.log(r);
-            document.getElementById("fileContent").innerHTML = r.content;
-            document.getElementById("fileContent").name = r.path;
-            document.getElementById("fileContent").readOnly =true;
+        url: "collaboration?method=checkLocationPath&pathFromPrompt=" + pathFromPrompt +
+            "&repoName=" + REPOSITORYNAME,
+        success: function (message) {
+            if (!message.localeCompare("OK")) {
+                $.ajax({
+                    url: "collaboration?method=createFile&pathFromPrompt=" + pathFromPrompt +
+                        "&repoName=" + REPOSITORYNAME + "&content=" + content +
+                        "&nameFromPrompt=" + nameFromPrompt,
+                    success: function (r) {
+                        console.log(r);
+                        showWorkingCopyStatus();
+                        alert(r);
+                    },
+                    error: function (message) {
+                        console.log(message);
+                    }
+                })
+            } else {
+                alert(message);
+            }
         }
     })
+
 }
 
 function onEditFile() {
-   // document.getElementById("saveButton").style.visibility = 'visible';
     document.getElementById("fileContent").readOnly =false;
+    alert("Edit the file in \'content area\' and press save");
     console.log(document.getElementById("fileContent").name);
 
 }
-function onAddFile(){
-    var prompt1 = prompt("Please enter new file name");
-    if (prompt1 != null) {
-        alert("Please enter new file content in the 'File content' area and press 'create new file'!");
-    }
+function onAddFile(event){
+    document.getElementById("fileContent").value="";
+    document.getElementById("fileContent").readOnly =false;
+
+    nameFromPrompt = prompt("Please enter new file name", '');
+    pathFromPrompt = prompt("Please enter relative path for the new file, the default will be the root ! ", '');
+    alert('File name : ' + nameFromPrompt + '\nFile path : ' + pathFromPrompt
+    + '\nPlease enter new file content in the \'File content\' area and press \'create new file\'');
+
 }
 function onDeleteFile() {
     var path= document.getElementById("fileContent").name;
+    path = path.replace(/\\/g, "%5C");
     $.ajax({
         url: "collaboration?method=deleteFile&repoName=" + REPOSITORYNAME+
         "&path=" +path,
         success: function (message) {
-            document.getElementById("deleteFileMessage").innerText = message;
-            document.getElementById("deleteFile").value="";
-            getHeadBranchName();
+            document.getElementById("fileContent").value=" ";
+            showWorkingCopyStatus();
+            alert(message);
         },
         error: function (message) {
             console.log(message);
-            document.getElementById("deleteFile").value="";
+            document.getElementById("fileContent").value=" ";
         }
     });
 }
@@ -133,24 +153,6 @@ function onClickCreateNewBranchButton() {
         error: function (message) {
             console.log(message);
             document.getElementById("createNewBranch").value="";
-        }
-    });
-}
-
-function getRRName() {
-
-    $.ajax({
-        url: "collaboration?method=getRemoteRepository&repoName=" + REPOSITORYNAME,
-        success: function (rrName) {
-            if(rrName== null) {
-                rrName="There is no remote repository :(";
-            }
-            var prefix = document.getElementById("remoteRepoName").innerHTML;
-            document.getElementById("remoteRepoName").innerHTML = prefix + " " + rrName;
-            RRName=rrName;
-        },
-        error: function (error) {
-            console.log(error);
         }
     });
 }
@@ -236,23 +238,26 @@ function refreshCurrentCommitFile(r) {
 
     r.forEach(function (path) {
         var split = path.split(/\\/);
-        var fileName = split[split.length-1];
-        $('<li onclick="onClickFile(event)" id="'+ path +'">' + fileName + '</li>').appendTo($("#currentCommitFiles"));
+       // var fileName = split[split.length-1];
+        $('<li onclick="onClickFile(event)" id="'+ path +'">' + path + '</li>').appendTo($("#currentCommitFiles"));
 
     });
 }
 function onCommit(event){
-    var commitMessage=document.getElementById("commitMessage").value;
+    var commitMessage=document.getElementById("commit").value;
     $.ajax({
 
         url: "collaboration?method=commit&repoName=" + REPOSITORYNAME
             + "&commitMessage=" + commitMessage,
         success: function (message) {
-            document.getElementById("commitMessage").innerText = message;
+            //document.getElementById("commit").innerText = message;
+            alert(message);
             document.getElementById("commit").value="";
+            $("#workingCopyStatuslist").empty();
         },
         error: function (message) {
             console.log(message);
+            alert(message);
             document.getElementById("commit").value="";
         }
     });
@@ -274,20 +279,22 @@ function onClickFile(event){
     })
 }
 
-function onSave(event){
-    $("#fileContent").empty();
-   // document.getElementById("fileContent").readOnly =false;
-
+function onSave(){
     var content =  document.getElementById("fileContent").value ;
     var path = document.getElementById("fileContent").name;
+    path = path.replace(/\\/g, "%5C");
+
+    document.getElementById("fileContent").value =" ";
+    document.getElementById("fileContent").readOnly =true;
     $.ajax({
         url: "collaboration?method=editFile&path="+ path+
             "&repoName=" + REPOSITORYNAME + "&content=" + content,
-        success: function (r) {
-            console.log(r);
-            document.getElementById("fileContent").innerHTML = r.content;
-            document.getElementById("fileContent").name = r.path;
-            document.getElementById("fileContent").readOnly =true;
+        success: function (message) {
+            showWorkingCopyStatus();
+            alert(message);
+        },
+        error: function (message) {
+            console.log(message);
         }
     })
 }
@@ -316,11 +323,45 @@ function showSingleCommitInfo(ev) {
         success: function (r) {
             console.log(r);
             r.forEach(function (info) {
-                var split = info.split(/\\/);
-                var fileName = split[split.length-1];
-                $('<li>  File name:  ' + fileName + '<br/>' +
+                $('<li>  File name:  ' + info + '<br/>' +
                     '</li>').appendTo($("#commitFileslist"));
             });
+        }
+    })
+}
+
+function showWorkingCopyStatus() {
+      $("#workingCopyStatuslist").empty();
+    $.ajax({
+        url: "collaboration?method=getWorkingCopyChanges"+
+            "&repoName=" + REPOSITORYNAME,
+        success: function (r) {
+            console.log(r);
+
+            if(r.newFile.length>0 ||r.editFile.length>0 || r.deleteFile.length>0) {
+                var editFile = r.editFile;
+                var deleteFile = r.deleteFile;
+                var newFile = r.newFile;
+
+                $.each(editFile || [], function (index, editItem) {
+                    $('<li> ' + editItem + '<br/>' +
+                        '</li>').appendTo($("#workingCopyStatuslist"));
+                });
+
+                $.each(deleteFile || [], function (index, deleteItem) {
+                    $('<li> ' + deleteItem + '<br/>' +
+                        '</li>').appendTo($("#workingCopyStatuslist"));
+                });
+
+                $.each(newFile || [], function (index, newItem) {
+                    $('<li>' + newItem + '<br/>' +
+                        '</li>').appendTo($("#workingCopyStatuslist"));
+                });
+            }
+            else {
+                $('<li> There is no changes since last commit! <br/>' +
+                    '</li>').appendTo($("#workingCopyStatuslist"));
+            }
         }
     })
 }

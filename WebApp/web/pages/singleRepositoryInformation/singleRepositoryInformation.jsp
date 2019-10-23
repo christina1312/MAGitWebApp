@@ -16,12 +16,12 @@
             <h4  id="remoteRepoName">
                  Remote Repository:
             </h4>
-            <h4 id="remoteUserName">
-                Remote user name:
-            </h4>
-            <h4 id="myUserName">
-                My user name:
-            </h4>
+<%--            <h4 id="remoteUserName">--%>
+<%--                Remote user name:--%>
+<%--            </h4>--%>
+<%--            <h4 id="myUserName">--%>
+<%--                My user name:--%>
+<%--            </h4>--%>
             <a href="../usersPrivateAccount/usersPrivateAccount.jsp">Back</a>
         </td>
         <td width="25%" style="max-height: 100px">
@@ -54,7 +54,9 @@
     <tr height="20%">
         <td style="max-height: 150px">
             <div style="height:100%;max-height: 150px;overflow:auto;">
-            Branches list:
+                <h5>
+                    Branches list:
+                </h5>
             <ul id="brancheslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
             </ul><br/>
             </div>
@@ -86,14 +88,18 @@
     <tr height="20%">
         <td style="max-height: 150px">
             <div style="height:100%;max-height: 150px;overflow:auto;">
-                head branch commits list:
+                <h5>
+                    Head branch commits list:
+                </h5>
                 <ul id="headBranchCommitsList" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
                 </ul><br/>
             </div>
         </td>
         <td colspan="2" rowspan="2">
-            <div style="height:100%;max-height: 150px;overflow:auto;">
-                This is your working copy ( All the files of the current commit) :) <button onclick="onAddFile(event)" id="addButton">+</button>
+            <div style="height:100%;max-height: 350px;overflow:auto;">
+                <h5>
+                    This is your working copy ( All the files of the current commit) :) <button onclick="onAddFile(event)" id="addButton">+Add</button>
+                </h5>
                 <ul id="currentCommitFiles" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
                 </ul><br/>
             </div>
@@ -108,7 +114,7 @@
 
             <button class="button"  onclick="onEditFile(event)">edit file</button>
             <button class="button" onclick="onSave(event)" id="saveButton" >Save</button>
-            <button class="button" class="button" onclick="onDeleteFile(event)" >delete file</button>
+            <button class="button" onclick="onDeleteFile(event)" >delete file</button>
             <button class="button" onclick="onCreateFile(event)">create new file</button>
 
         </td>
@@ -116,7 +122,9 @@
     <tr height="20%" style="max-height: 150px">
         <td style="max-height: 150px">
             <div style="height:100%;max-height: 150px;overflow:auto;">
-                Commit files:
+                <h5>
+                     Commit files:
+                </h5>
                 <ul id="commitFileslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
                 </ul><br/>
             </div>
@@ -124,21 +132,33 @@
             <h5>Please enter commit message :</h5>
             <input id="commit" type="text" name="commitMessage" class=""/>
             <button onclick="onCommit(event)"> commit</button>
-            <div>
-                <h5 id=commitMessage" style="color: blue;"></h5>
-            </div>
+<%--            <div>--%>
+<%--                <h5 id=commitMessage" style="color: blue;"></h5>--%>
+<%--            </div>--%>
         </td>
     </tr>
-    <tr height="20%" style="max-height: 150px">
-
+    <tr height="30%" style="max-height: 150px">
         <td><div width="20%" style="height:100%;max-height: 150px;overflow:auto;">
-            Notifications:
-<%--            <button onclick="addNote(event)"> Add note</button>--%>
+            <h5>
+                Notifications:
+            </h5>
             <br/>
             <ul id="notificationslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
             </ul>
         </div>
         </td>
+        <td colspan="2" ><div width="20%" style="height:100%;max-height: 150px;overflow:auto;">
+            <h5>
+                Working copy status:
+            </h5>
+            <br/>
+            <ul id="workingCopyStatuslist" style="color: black; font-family: 'Droid serif', serif; font-size: 20px; font-weight: bold; font-style: inherit; line-height: 44px; margin: 0 0 12px; text-align: left;">
+            </ul>
+        </div>
+        </td>
+    </tr>
+    <tr>
+        <br/><br/><br/><br/><br/>
     </tr>
 </table>
 </body>

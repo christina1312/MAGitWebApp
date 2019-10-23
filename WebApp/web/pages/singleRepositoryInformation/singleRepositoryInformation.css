@@ -4,7 +4,9 @@ body{
     margin: 0;
     overflow-y: scroll;
 }
-
+.WC {
+    border: 1px solid #FF0000;
+}
 .button {
     color: darkslategrey;
     font-size: 15px;
